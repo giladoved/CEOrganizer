@@ -33,9 +33,6 @@ public class MainActivity extends ActionBarActivity {
 
         final ListView listView = (ListView)findViewById(R.id.listView);
 
-        /*MyArrayAdapter mainAdapter = new MyArrayAdapter(getApplicationContext());
-        mainAdapter.setTextKey("summary");*/
-
         final List<ParseObject> threads = new ArrayList<>();
         final ArrayList<String> names = new ArrayList<>();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Summary");

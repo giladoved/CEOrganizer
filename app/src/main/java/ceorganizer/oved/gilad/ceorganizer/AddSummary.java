@@ -7,7 +7,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.SaveCallback;
 
 
 public class AddSummary extends ActionBarActivity {
@@ -29,11 +31,14 @@ public class AddSummary extends ActionBarActivity {
                 summaryObj.put("type", type);
                 summaryObj.put("summary", summaryText.getText().toString().trim());
                 summaryObj.put("caller", number);
-                summaryObj.saveInBackground();
-
-                finish();
-                Intent i = new Intent(AddSummary.this, MainActivity.class);
-                startActivity(i);
+                summaryObj.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        finish();
+                        Intent i = new Intent(AddSummary.this, MainActivity.class);
+                        startActivity(i);
+                    }
+                });
             }
         });
     }

@@ -47,13 +47,13 @@ public class MyArrayAdapter extends ParseQueryAdapter {
         } else {
             titleTextView.setTextColor(Color.rgb(255, 102, 0));
         }
-        titleTextView.setTextSize(18);
+        titleTextView.setTextSize(16);
 
         // Add a reminder of how long this item has been outstanding
         TextView timestampView = (TextView) v.findViewById(R.id.dateLbl);
         Date date = object.getCreatedAt();
         String dateFormat = new SimpleDateFormat("h:mm MMM d").format(date);
-        timestampView.setText(dateFormat);
+        timestampView.setText(type + " on " + dateFormat);
 
         return v;
     }

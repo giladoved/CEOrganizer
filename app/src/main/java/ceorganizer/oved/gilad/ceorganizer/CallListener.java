@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.widget.Toast;
+
+import com.parse.ParseObject;
+
 import java.util.Date;
 
 /**
@@ -49,6 +51,11 @@ public class CallListener  {
                     //Went to idle-  this is the end of a call.  What type depends on previous state(s)
                     if (lastState == TelephonyManager.CALL_STATE_RINGING) {
                         //Ring but no pickup-  a miss
+                        ParseObject summaryObj = new ParseObject("Summary");
+                        summaryObj.put("type", "missed call");
+                        summaryObj.put("summary", "");
+                        summaryObj.put("caller", incomingNumber);
+                        summaryObj.saveInBackground();
                         //Toast.makeText(context, "missed call from " + incomingNumber, Toast.LENGTH_SHORT).show();
                     } else if (isIncoming) {
                         //Toast.makeText(context, "incoming call ended from " + incomingNumber, Toast.LENGTH_SHORT).show();
@@ -77,99 +84,20 @@ public class CallListener  {
      * Broadcast receiver to detect the outgoing calls.
      */
     public class OutgoingReceiver extends BroadcastReceiver {
-        //PhoneListener listener;
-        //protected Context savedContext;
 
         @Override
         public void onReceive(Context context, Intent intent) {
             String number = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
-
-            Toast.makeText(context,
-                    "Outgoing---: "+number,
-                    Toast.LENGTH_LONG).show();
-
+            //Toast.makeText(context, "Outgoing---: "+number, Toast.LENGTH_LONG).show();
             outgoingNumber = number;
         }
 
     }
 
-    /*public class PhoneListener extends PhoneStateListener {
-
-        int lastState = TelephonyManager.CALL_STATE_IDLE;
-        Date callStartTime;
-        boolean isIncoming;
-        String savedNumber;
-
-        public PhoneListener() {
-        }
-
-        public void setOutgoingNumber(String number) {
-            savedNumber = number;
-        }
-
-        //Incoming call-  goes from IDLE to RINGING when it rings, to OFFHOOK when it's answered, to IDLE when its hung up
-        //Outgoing call-  goes from IDLE to OFFHOOK when it dials out, to IDLE when hung up
-        @Override
-        public void onCallStateChanged(int state, String incomingNumber) {
-            Toast.makeText(context, "numbahh " + incomingNumber, Toast.LENGTH_SHORT).show();
-            super.onCallStateChanged(state, incomingNumber);
-            if (lastState == state) {
-                //No change, debounce extras
-
-                return;
-            }
-            switch (state) {
-                case TelephonyManager.CALL_STATE_RINGING:
-                    isIncoming = true;
-                    callStartTime = new Date();
-                    savedNumber = incomingNumber;
-                    //Toast.makeText(getApplicationContext(), "incoming call started from " + incomingNumber, Toast.LENGTH_SHORT).show();
-                    break;
-                case TelephonyManager.CALL_STATE_OFFHOOK:
-                    //Transition of ringing->offhook are pickups of incoming calls.  Nothing donw on them
-                    if (lastState != TelephonyManager.CALL_STATE_RINGING) {
-                        isIncoming = false;
-                        callStartTime = new Date();
-                        //Toast.makeText(getApplicationContext(), "outgoing call started from " + savedNumber, Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-                case TelephonyManager.CALL_STATE_IDLE:
-                    //Went to idle-  this is the end of a call.  What type depends on previous state(s)
-                    if (lastState == TelephonyManager.CALL_STATE_RINGING) {
-                        //Ring but no pickup-  a miss
-                        Toast.makeText(getApplicationContext(), "missed call from " + savedNumber, Toast.LENGTH_SHORT).show();
-                    } else if (isIncoming) {
-                        Toast.makeText(getApplicationContext(), "incoming call ended from " + savedNumber, Toast.LENGTH_SHORT).show();
-                        finish();
-                        Intent i = new Intent(MainActivity.this, AddSummary.class);
-                        i.putExtra(EXTRA_TYPE, "incoming call");
-                        if (savedNumber != null)
-                            i.putExtra(EXTRA_NUMBER, savedNumber);
-                        else
-                            i.putExtra(EXTRA_NUMBER, incomingNumber);
-                        startActivity(i);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "outgoing call ended from " + savedNumber, Toast.LENGTH_SHORT).show();
-                        finish();
-                        Intent i = new Intent(MainActivity.this, AddSummary.class);
-                        i.putExtra(EXTRA_TYPE, "outgoing call");
-                        if (savedNumber != null)
-                            i.putExtra(EXTRA_NUMBER, savedNumber);
-                        else
-                            i.putExtra(EXTRA_NUMBER, incomingNumber);
-                        startActivity(i);
-                    }
-                    break;
-            }
-            lastState = state;
-        }
-    }*/
-
     private Context context;
     private TelephonyManager teleManager;
     private CallStateListener stateListener;
     String outgoingNumber;
-    //private PhoneListener stateListener;
 
     private OutgoingReceiver outgoingReceiver;
 
