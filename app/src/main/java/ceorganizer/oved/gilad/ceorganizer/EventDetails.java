@@ -4,16 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.parse.ParseQueryAdapter;
 
 
 public class EventDetails extends ActionBarActivity {
@@ -28,24 +21,11 @@ public class EventDetails extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final String caller = getIntent().getStringExtra(MainActivity.EXTRA_CALLER);
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Summary");
-        query.whereEqualTo("caller", caller);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> list, ParseException e) {
-                if (e == null) {
-                    ArrayList<String> summaries = new ArrayList<String>();
-                    for (ParseObject obj : list) {
-                        summaries.add(obj.getString("summary"));
-                    }
+        ParseQueryAdapter adapter = new MyArrayAdapter(EventDetails.this, caller);
+        listView.setAdapter(adapter);
+        adapter.loadObjects();
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(EventDetails.this,
-                            android.R.layout.simple_list_item_1, android.R.id.text1, summaries);
-                    listView.setAdapter(adapter);
-                } else {
-
-                }
-            }
-        });
+        setTitle(caller);
     }
 
     @Override

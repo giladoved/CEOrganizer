@@ -59,6 +59,8 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+        setTitle("CEOrganizer");
+
         listView.setClickable(true);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 

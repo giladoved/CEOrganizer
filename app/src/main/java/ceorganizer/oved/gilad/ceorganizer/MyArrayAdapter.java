@@ -17,11 +17,12 @@ import java.util.Date;
  * Created by gilad on 6/4/15.
  */
 public class MyArrayAdapter extends ParseQueryAdapter {
-    public MyArrayAdapter(Context context) {
+    public MyArrayAdapter(Context context, final String caller) {
         super(context, new ParseQueryAdapter.QueryFactory<ParseObject>() {
             public ParseQuery create() {
                 ParseQuery query = new ParseQuery("Summary");
                 query.addDescendingOrder("createdAt");
+                query.whereEqualTo("caller", caller);
                 return query;
             }
         });
@@ -38,7 +39,7 @@ public class MyArrayAdapter extends ParseQueryAdapter {
         TextView titleTextView = (TextView) v.findViewById(R.id.summaryLbl);
         String summary = object.getString("summary");
         String name = object.getString("caller");
-        titleTextView.setText(name + ": " + summary);
+        titleTextView.setText(summary);
 
         String type = object.getString("type");
         if (type.equals("incoming")) {
