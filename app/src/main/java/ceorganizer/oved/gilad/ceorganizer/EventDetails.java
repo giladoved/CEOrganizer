@@ -25,7 +25,7 @@ public class EventDetails extends ActionBarActivity {
 
         final ListView listView = (ListView)findViewById(R.id.eventListView);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final String caller = getIntent().getStringExtra(MainActivity.EXTRA_CALLER);
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Summary");
