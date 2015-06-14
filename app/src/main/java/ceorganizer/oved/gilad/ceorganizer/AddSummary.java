@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 
@@ -28,9 +29,10 @@ public class AddSummary extends ActionBarActivity {
         saveSummaryBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 ParseObject summaryObj = new ParseObject("Summary");
+                summaryObj.put("summary", summaryText.getText().toString());
                 summaryObj.put("type", type);
-                summaryObj.put("summary", summaryText.getText().toString().trim());
                 summaryObj.put("caller", number);
+                summaryObj.put("user", ParseUser.getCurrentUser());
                 summaryObj.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
@@ -42,7 +44,6 @@ public class AddSummary extends ActionBarActivity {
             }
         });
     }
-
 
 
 }

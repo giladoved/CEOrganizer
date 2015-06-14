@@ -12,6 +12,7 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ public class MainActivity extends ActionBarActivity {
         final List<ParseObject> threads = new ArrayList<>();
         final ArrayList<String> names = new ArrayList<>();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Summary");
+        query.whereEqualTo("user", ParseUser.getCurrentUser());
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> list, ParseException e) {
                 if (e == null) {
@@ -50,6 +52,7 @@ public class MainActivity extends ActionBarActivity {
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
                             android.R.layout.simple_list_item_1, android.R.id.text1, names);
                     listView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
                 } else {
 
                 }
@@ -63,7 +66,7 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-                String caller = (String)listView.getItemAtPosition(pos);
+                String caller = (String) listView.getItemAtPosition(pos);
                 Intent i = new Intent(MainActivity.this, EventDetails.class);
                 i.putExtra(EXTRA_CALLER, caller);
                 startActivity(i);
