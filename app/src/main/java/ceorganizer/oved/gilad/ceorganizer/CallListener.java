@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -24,6 +25,7 @@ import java.util.Date;
 public class CallListener  {
     String incomingNum;
     LinearLayout ly1;
+    LinearLayout ly2;
     WindowManager wm;
 
     /**
@@ -57,7 +59,6 @@ public class CallListener  {
                         isIncoming = false;
                         callStartTime = new Date();
                         Toast.makeText(context, "outgoing call started from " + incomingNumber, Toast.LENGTH_SHORT).show();
-                        addProfilePopup();
                     }
                     break;
                 case TelephonyManager.CALL_STATE_IDLE:
@@ -135,7 +136,8 @@ public class CallListener  {
         }
 
         public void removeProfilePopup() {
-            wm.removeView(ly1);
+            if (ly1 != null)
+                wm.removeView(ly1);
         }
 
     }
@@ -150,6 +152,15 @@ public class CallListener  {
             String number = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
             Toast.makeText(context, "NUM!!-: " + number, Toast.LENGTH_LONG).show();
             outgoingNumber = number;
+
+
+            if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
+                // Outgoing call
+                String outgoingNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
+                Log.d("SWAG", "PhoneStateReceiver **Outgoing call " + outgoingNumber);
+
+                //setResultData(null); // Kills the outgoing call
+            }
         }
 
     }

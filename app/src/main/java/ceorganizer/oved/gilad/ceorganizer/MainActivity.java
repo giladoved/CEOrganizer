@@ -77,5 +77,4 @@ public class MainActivity extends ActionBarActivity {
         startService(intent);
     }
 
-
 }
