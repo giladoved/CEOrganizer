@@ -6,8 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -32,32 +32,34 @@ public class CallService extends Service {
 
     WindowManager wm;
     LinearLayout llayout;
+    Handler handler;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         listener = new CallListener(this);
         listener.start();
+        handler = new Handler();
 
         final ActivityManager am =  (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
 
         Timer timer  =  new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
-
-            public void run()
-            {
-                Looper.prepare();
+            public void run() {
                 List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
 
                 String currentRunningActivityName = taskInfo.get(0).topActivity.getClassName();
                 Log.d("SWAG", currentRunningActivityName);
                 if (currentRunningActivityName.equals("com.android.contacts.activities.DialtactsActivity")) {
-                    Log.d("SWAG", "opened called");
-                    addSubjectLine();
+                    handler.post(new Runnable() { // This thread runs in the UI
+                        @Override
+                        public void run() {
+                            if (llayout == null)
+                                addSubjectLine();
+                        }
+                    });
                 }
-
-                Looper.loop();
             }
-        }, 20000, 3000);  // every 3 seconds
+        }, 0, 1000);  // every 3 seconds
 
 
         return START_STICKY;
@@ -95,14 +97,26 @@ public class CallService extends Service {
         llayout.setOrientation(LinearLayout.HORIZONTAL);
         llayout.setWeightSum(1);
 
+        Button cancelBtn = new Button(getApplicationContext());
+        cancelBtn.setText("x");
+        cancelBtn.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT, .45f));
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeSubjectLine();
+            }
+        });
+        llayout.addView(cancelBtn);
+
         final EditText textEdit = new EditText(getApplicationContext());
         textEdit.setHint("Subject Line");
-        textEdit.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT, .2f));
+        textEdit.setLines(1);
+        textEdit.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT, .1f));
         llayout.addView(textEdit);
 
         Button btn = new Button(getApplicationContext());
-        btn.setText("Save");
-        btn.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT, .8f));
+        btn.setText("✓");
+        btn.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT, .45f));
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -15,13 +15,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by gilad on 6/10/15.
@@ -63,6 +63,7 @@ public class CallListener  {
                         isIncoming = false;
                         callStartTime = new Date();
                         Toast.makeText(context, "outgoing call started from " + incomingNumber, Toast.LENGTH_SHORT).show();
+                        addProfilePopup();
                     }
                     break;
                 case TelephonyManager.CALL_STATE_IDLE:
@@ -120,6 +121,10 @@ public class CallListener  {
             ly1.setBackgroundColor(Color.GRAY);
             ly1.setOrientation(LinearLayout.VERTICAL);
 
+            final TextView subject = new TextView(context);
+            subject.setTextSize(16);
+            ly1.addView(subject);
+
             final TextView nameText = new TextView(context);
             ly1.addView(nameText);
 
@@ -135,19 +140,26 @@ public class CallListener  {
             wm.addView(ly1, params1);
 
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Request");
-            query.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> parseObjects, ParseException e) {
-                    ParseObject request = parseObjects.get(0);
-                    String name = request.getString("name");
-                    String job = request.getString("job");
-                    String company = request.getString("company");
-                    String number = request.getString("number");
+            query.include("from");
+            query.orderByDescending("updatedAt");
+            query.getFirstInBackground(new GetCallback<ParseObject>() {
+                public void done(ParseObject object, ParseException e) {
+                    if (object == null) {
+                        Log.d("SWAG", "The getFirst request failed.");
+                    } else {
+                        ParseUser requestUser = (ParseUser)object.getParseObject("from");
+                        String name = requestUser.getUsername();
+                        String job = requestUser.getString("position");
+                        String company = requestUser.getString("company");
+                        String number = requestUser.getString("number");
 
-                    nameText.setText(name);
-                    jobText.setText(job);
-                    companyText.setText(company);
-                    numberText.setText(number);
+                        nameText.setText(name);
+                        jobText.setText(job);
+                        companyText.setText(company);
+                        numberText.setText(number);
+
+                        subject.setText(object.get("subject").toString());
+                    }
                 }
             });
         }
