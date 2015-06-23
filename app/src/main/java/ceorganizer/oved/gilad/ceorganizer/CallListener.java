@@ -15,9 +15,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by gilad on 6/10/15.
@@ -116,23 +120,36 @@ public class CallListener  {
             ly1.setBackgroundColor(Color.GRAY);
             ly1.setOrientation(LinearLayout.VERTICAL);
 
-            TextView nameText = new TextView(context);
-            nameText.setText("John Cena");
+            final TextView nameText = new TextView(context);
             ly1.addView(nameText);
 
-            TextView jobText = new TextView(context);
-            jobText.setText("Professor Wrangler");
+            final TextView jobText = new TextView(context);
             ly1.addView(jobText);
 
-            TextView companyText = new TextView(context);
-            companyText.setText("Google");
+            final TextView companyText = new TextView(context);
             ly1.addView(companyText);
 
-            TextView numberText = new TextView(context);
-            numberText.setText("781-308-7824");
+            final TextView numberText = new TextView(context);
             ly1.addView(numberText);
 
             wm.addView(ly1, params1);
+
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Request");
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> parseObjects, ParseException e) {
+                    ParseObject request = parseObjects.get(0);
+                    String name = request.getString("name");
+                    String job = request.getString("job");
+                    String company = request.getString("company");
+                    String number = request.getString("number");
+
+                    nameText.setText(name);
+                    jobText.setText(job);
+                    companyText.setText(company);
+                    numberText.setText(number);
+                }
+            });
         }
 
         public void removeProfilePopup() {

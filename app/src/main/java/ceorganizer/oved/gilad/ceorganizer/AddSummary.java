@@ -32,7 +32,7 @@ public class AddSummary extends ActionBarActivity {
                 summaryObj.put("summary", summaryText.getText().toString());
                 summaryObj.put("type", type);
                 summaryObj.put("caller", number);
-                summaryObj.put("user", ParseUser.getCurrentUser());
+                summaryObj.put("self", ParseUser.getCurrentUser());
                 summaryObj.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {

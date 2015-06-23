@@ -17,6 +17,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 
+import com.parse.ParseObject;
+import com.parse.ParseUser;
+
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -92,7 +95,7 @@ public class CallService extends Service {
         llayout.setOrientation(LinearLayout.HORIZONTAL);
         llayout.setWeightSum(1);
 
-        EditText textEdit = new EditText(getApplicationContext());
+        final EditText textEdit = new EditText(getApplicationContext());
         textEdit.setHint("Subject Line");
         textEdit.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT, .2f));
         llayout.addView(textEdit);
@@ -103,8 +106,10 @@ public class CallService extends Service {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
-
+                ParseObject request = new ParseObject("Request");
+                request.put("from", ParseUser.getCurrentUser());
+                request.put("subject", textEdit.getText().toString().trim());
+                request.saveInBackground();
 
                 removeSubjectLine();
             }
