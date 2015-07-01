@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,6 +20,7 @@ import android.widget.TableLayout;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -43,7 +45,11 @@ public class CallService extends Service {
         Timer timer  =  new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                if (am.getRunningTasks(1).get(0).topActivity.getClassName().equals("com.android.contacts.activities.DialtactsActivity")) {
+                List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+
+                String currentRunningActivityName = taskInfo.get(0).topActivity.getClassName();
+                Log.d("SWAG", currentRunningActivityName);
+                if (currentRunningActivityName.equals("com.android.contacts.activities.DialtactsActivity")) {
                     handler.post(new Runnable() { // This thread runs in the UI
                         @Override
                         public void run() {
